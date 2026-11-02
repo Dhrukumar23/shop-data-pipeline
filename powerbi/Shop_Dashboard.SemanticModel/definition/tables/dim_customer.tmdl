@@ -1,0 +1,51 @@
+table dim_customer
+	lineageTag: fd6b3aec-1734-438c-b7fc-7cd095f60f13
+
+	column customer_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: customer_id
+		lineageTag: b537052c-058e-49ae-891f-3ba1f2f5cb53
+
+	column customer_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: customer_name
+		lineageTag: eed1b0e4-284e-4183-be51-4edfebbf7c50
+
+	column email
+		dataType: string
+		summarizeBy: none
+		sourceColumn: email
+		lineageTag: 242d1f34-e874-4e4c-9545-9fa17de4a4ee
+
+	column country
+		dataType: string
+		summarizeBy: none
+		sourceColumn: country
+		lineageTag: bc28c790-a3ca-44fd-a27c-3ef7e636a792
+
+	column first_order_date
+		dataType: dateTime
+		formatString: Short Date
+		summarizeBy: none
+		sourceColumn: first_order_date
+		lineageTag: d410de9d-b7fe-4dd1-b315-465d5b7c2f30
+
+	column lifetime_orders
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: lifetime_orders
+		lineageTag: 294af5e2-dd52-4f35-8607-7fe31c02364b
+
+	partition dim_customer = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(Web.Contents(DataUrl & "dim_customer.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"customer_id", type text}, {"customer_name", type text}, {"email", type text}, {"country", type text}, {"first_order_date", type date}, {"lifetime_orders", Int64.Type}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

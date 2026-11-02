@@ -1,0 +1,125 @@
+table fct_orders
+	lineageTag: 1b19ccb8-881b-4f77-b306-f56782fe9042
+
+	measure 'Net Revenue' = SUM(fct_orders[net_revenue])
+		formatString: \€#,0;-\€#,0;\€#,0
+		lineageTag: fb156460-daaa-4621-9e64-e05e785489ec
+
+	measure 'Gross Sales' = SUM(fct_orders[gross_amount])
+		formatString: \€#,0;-\€#,0;\€#,0
+		lineageTag: e7c36a54-685e-4aac-b3ca-3b0f582802b4
+
+	measure 'Refunds' = SUM(fct_orders[refund_amount])
+		formatString: \€#,0;-\€#,0;\€#,0
+		lineageTag: 569d8343-9379-48c6-8316-57fc041b341b
+
+	measure 'Orders' = COUNTROWS(fct_orders)
+		formatString: #,0
+		lineageTag: eb78be76-ce33-4738-8295-04f57a171b36
+
+	measure 'Customers' = DISTINCTCOUNT(fct_orders[customer_id])
+		formatString: #,0
+		lineageTag: 71190f60-eff2-4fa8-b304-274b1f870490
+
+	measure 'Avg Order Value' = DIVIDE([Gross Sales], [Orders])
+		formatString: \€#,0.00
+		lineageTag: 062ef2c2-2a72-4d0c-9ba0-1627bd8be74d
+
+	measure 'Cancel Rate' = DIVIDE(CALCULATE([Orders], fct_orders[status] = "cancelled"), [Orders])
+		formatString: 0.0%
+		lineageTag: 4cabc116-7771-4b30-b2f6-b235f93c722f
+
+	measure 'Refund Rate' = DIVIDE([Refunds], [Gross Sales])
+		formatString: 0.0%
+		lineageTag: 46441a9a-8f3f-4717-9fb7-ac87b2143b6f
+
+	column order_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: order_id
+		lineageTag: abc5516b-b668-4248-bfc1-43152f97f41d
+
+	column order_date
+		dataType: dateTime
+		formatString: Short Date
+		summarizeBy: none
+		sourceColumn: order_date
+		lineageTag: dcf3b36e-eccf-42d5-a212-edb61f33ff08
+
+	column customer_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: customer_id
+		lineageTag: 2e6aaad7-e119-4372-981e-1a13cfd5777e
+
+	column product_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: product_id
+		lineageTag: aa4ff9b3-7c9a-4f34-b541-bd8d4eb5bd67
+
+	column country
+		dataType: string
+		summarizeBy: none
+		sourceColumn: country
+		lineageTag: 5d014cd2-f258-4d36-83d7-decc91e7dbd7
+
+	column category
+		dataType: string
+		summarizeBy: none
+		sourceColumn: category
+		lineageTag: fedebbb5-7845-4dab-a9b8-f25c1131ce42
+
+	column status
+		dataType: string
+		summarizeBy: none
+		sourceColumn: status
+		lineageTag: 2db7dec3-1dab-40fb-9bc0-88010e2c3061
+
+	column quantity
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: quantity
+		lineageTag: 9d6ebf86-d4a2-4294-af3e-3186a662a735
+
+	column gross_amount
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: gross_amount
+		lineageTag: 17794a44-8b62-49ae-9f89-8bc93d7072f6
+
+	column paid_amount
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: paid_amount
+		lineageTag: 8ee8b6ec-aa1c-47d6-86f8-b3cc33407325
+
+	column refund_amount
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: refund_amount
+		lineageTag: 4fefea74-19f1-45a6-ac21-b50940f5a1bc
+
+	column net_revenue
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: net_revenue
+		lineageTag: a879986f-cf6e-437a-b484-eb9777c94de2
+
+	column is_fully_paid
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: is_fully_paid
+		lineageTag: e8e2fec8-4b0d-4de0-8675-321634a9814a
+
+	partition fct_orders = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(Web.Contents(DataUrl & "fct_orders.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"order_id", type text}, {"order_date", type date}, {"customer_id", type text}, {"product_id", type text}, {"country", type text}, {"category", type text}, {"status", type text}, {"quantity", Int64.Type}, {"gross_amount", type number}, {"paid_amount", type number}, {"refund_amount", type number}, {"net_revenue", type number}, {"is_fully_paid", type logical}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,4 @@
+expression DataUrl = "https://raw.githubusercontent.com/Dhrukumar23/shop-data-pipeline/main/output/" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: aa7b141a-9736-4d76-8070-6ccfd25428a9
+
+	annotation PBI_ResultType = Text

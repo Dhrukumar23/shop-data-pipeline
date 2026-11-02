@@ -1,0 +1,38 @@
+table dim_product
+	lineageTag: fe6a581f-6ba7-409a-85f5-e8fc9562dd90
+
+	column product_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: product_id
+		lineageTag: 792ec8b3-8232-4ec9-ba4f-b4df8670a239
+
+	column product_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: product_name
+		lineageTag: f8e5c138-855e-4e56-a48a-62fbb9925f6c
+
+	column category
+		dataType: string
+		summarizeBy: none
+		sourceColumn: category
+		lineageTag: b99dc70c-4a7b-4753-9006-8e158ad6cd10
+
+	column list_price
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: list_price
+		lineageTag: e7d0688b-7291-4643-8229-0fe9c444bacd
+
+	partition dim_product = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(Web.Contents(DataUrl & "dim_product.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"product_id", type text}, {"product_name", type text}, {"category", type text}, {"list_price", type number}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

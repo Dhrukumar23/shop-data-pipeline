@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "1e1aab5185054a1184f5",
+  "position": {
+    "x": 650,
+    "y": 90,
+    "z": 12,
+    "height": 110,
+    "width": 290,
+    "tabOrder": 12
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fct_orders"
+                    }
+                  },
+                  "Property": "Refund Rate"
+                }
+              },
+              "queryRef": "fct_orders.Refund Rate",
+              "nativeQueryRef": "Refund Rate"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

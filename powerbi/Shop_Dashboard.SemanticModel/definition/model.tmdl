@@ -1,0 +1,14 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+	annotation PBI_QueryOrder = ["DataUrl","fct_orders","dim_customer","dim_product","mart_daily_revenue"]
+
+ref table fct_orders
+ref table dim_customer
+ref table dim_product
+ref table mart_daily_revenue

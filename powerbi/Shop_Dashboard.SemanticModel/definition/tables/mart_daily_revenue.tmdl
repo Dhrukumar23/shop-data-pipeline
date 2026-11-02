@@ -1,0 +1,69 @@
+table mart_daily_revenue
+	lineageTag: 4be729cf-16cc-4481-9eab-3aaf3e6545bc
+
+	column order_date
+		dataType: dateTime
+		formatString: Short Date
+		summarizeBy: none
+		sourceColumn: order_date
+		lineageTag: d7a1cee6-fc5a-4549-b9f1-ef03ecc57b99
+
+	column country
+		dataType: string
+		summarizeBy: none
+		sourceColumn: country
+		lineageTag: 89e8fd1b-4d19-4e9b-b01f-217d792465a8
+
+	column orders
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: orders
+		lineageTag: 6efc63d8-104f-4c86-9120-1a7baca035d0
+
+	column customers
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: customers
+		lineageTag: c7b8e02d-2b4a-4244-a06b-1aefc53500d9
+
+	column gross_amount
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: gross_amount
+		lineageTag: 14b58979-726a-4fb2-8f8b-1dd354676dda
+
+	column refunds
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: refunds
+		lineageTag: b176d5e4-1709-428d-815b-2b8deb8c7ea9
+
+	column net_revenue
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: net_revenue
+		lineageTag: d5a0d0fb-a807-40c0-a359-b4aff439a04f
+
+	column cancel_rate
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: cancel_rate
+		lineageTag: 419586d8-88a2-4a51-9b68-fec9f042ba75
+
+	column unpaid_rate
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: unpaid_rate
+		lineageTag: 70b00356-c747-4fdc-818a-62dcb3772af9
+
+	partition mart_daily_revenue = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(Web.Contents(DataUrl & "mart_daily_revenue.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"order_date", type date}, {"country", type text}, {"orders", Int64.Type}, {"customers", Int64.Type}, {"gross_amount", type number}, {"refunds", type number}, {"net_revenue", type number}, {"cancel_rate", type number}, {"unpaid_rate", type number}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
