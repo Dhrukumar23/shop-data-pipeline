@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "One row per customer, latest version, standardised country and e-mail."
+    columns:
+      - name: customer_id
+        tests: [unique, not_null]
+      - name: country
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Germany', 'Italy', 'India', 'Netherlands']
+  - name: stg_products
+    columns:
+      - name: product_id
+        tests: [unique, not_null]
+  - name: stg_orders
+    description: "One row per order with its latest status."
+    columns:
+      - name: order_id
+        tests: [unique, not_null]
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+      - name: status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['placed', 'shipped', 'cancelled']
+  - name: stg_payments
+    columns:
+      - name: payment_id
+        tests: [unique, not_null]
+      - name: order_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+  - name: stg_refunds
+    columns:
+      - name: refund_id
+        tests: [unique, not_null]

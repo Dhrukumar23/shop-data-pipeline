@@ -1,0 +1,63 @@
+
+=== 1. SOURCE: shop system exports daily files ===
+  landing zone holds 31 daily batches (2026-09-01 to 2026-10-01)
+
+=== 2. EXTRACT + LOAD: incremental load into warehouse (raw layer) ===
+  loaded batch 2026-10-01: customers=7, products=0, orders=80, payments=42, refunds=1
+
+=== 3. TRANSFORM: dbt build (models + tests) ===
+  3 of 35 OK created sql view model staging.stg_payments ......................... [OK in 0.34s]
+  4 of 35 OK created sql view model staging.stg_products ......................... [OK in 0.33s]
+  2 of 35 OK created sql view model staging.stg_orders ........................... [OK in 0.36s]
+  1 of 35 OK created sql view model staging.stg_customers ........................ [OK in 0.34s]
+  7 of 35 PASS unique_stg_payments_payment_id .................................... [PASS in 0.16s]
+  6 of 35 PASS not_null_stg_payments_payment_id .................................. [PASS in 0.15s]
+  8 of 35 PASS accepted_values_stg_orders_status__placed__shipped__cancelled ..... [PASS in 0.15s]
+  5 of 35 OK created sql view model staging.stg_refunds .......................... [OK in 0.25s]
+  9 of 35 PASS not_null_stg_orders_customer_id ................................... [PASS in 0.16s]
+  11 of 35 PASS not_null_stg_products_product_id ................................. [PASS in 0.13s]
+  10 of 35 PASS not_null_stg_orders_order_id ..................................... [PASS in 0.14s]
+  12 of 35 PASS relationships_stg_payments_order_id__order_id__ref_stg_orders_ ... [PASS in 0.14s]
+  14 of 35 PASS unique_stg_products_product_id ................................... [PASS in 0.09s]
+  15 of 35 PASS accepted_values_stg_customers_country__Germany__Italy__India__Netherlands  [PASS in 0.11s]
+  13 of 35 PASS unique_stg_orders_order_id ....................................... [PASS in 0.15s]
+  16 of 35 PASS not_null_stg_customers_customer_id ............................... [PASS in 0.10s]
+  17 of 35 PASS relationships_stg_orders_customer_id__customer_id__ref_stg_customers_  [PASS in 0.12s]
+  19 of 35 PASS not_null_stg_refunds_refund_id ................................... [PASS in 0.10s]
+  18 of 35 PASS unique_stg_customers_customer_id ................................. [PASS in 0.12s]
+  20 of 35 PASS unique_stg_refunds_refund_id ..................................... [PASS in 0.09s]
+  21 of 35 OK created sql table model marts.dim_product .......................... [OK in 0.25s]
+  23 of 35 OK created sql view model intermediate.int_order_financials ........... [OK in 0.20s]
+  22 of 35 OK created sql table model marts.dim_customer ......................... [OK in 0.29s]
+  25 of 35 PASS unique_dim_product_product_id .................................... [PASS in 0.08s]
+  24 of 35 PASS not_null_dim_product_product_id .................................. [PASS in 0.11s]
+  26 of 35 PASS not_null_dim_customer_customer_id ................................ [PASS in 0.05s]
+  27 of 35 PASS unique_dim_customer_customer_id .................................. [PASS in 0.06s]
+  28 of 35 OK created sql table model marts.fct_orders ........................... [OK in 0.06s]
+  31 of 35 PASS not_null_fct_orders_order_id ..................................... [PASS in 0.10s]
+  30 of 35 PASS assert_payment_not_above_order ................................... [PASS in 0.06s]
+  29 of 35 PASS assert_net_revenue_not_negative .................................. [PASS in 0.09s]
+  32 of 35 PASS relationships_fct_orders_customer_id__customer_id__ref_dim_customer_  [PASS in 0.09s]
+  34 of 35 PASS unique_fct_orders_order_id ....................................... [PASS in 0.05s]
+  33 of 35 PASS relationships_fct_orders_product_id__product_id__ref_dim_product_  [PASS in 0.05s]
+  35 of 35 OK created sql table model marts.mart_daily_revenue ................... [OK in 0.04s]
+  Done. PASS=35 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=35
+
+=== 4. SERVE: export marts for Power BI ===
+  output/fct_orders.csv
+  output/dim_customer.csv
+  output/dim_product.csv
+  output/mart_daily_revenue.csv
+
+=== 5. REPORT: data quality and KPIs ===
+  orders:    2,822 raw rows (incl. duplicates + status updates) -> 1,649 clean orders
+  customers: 199 raw rows -> 190 unique customers
+  country spellings standardised: 13 variants -> 4 countries
+  amounts fixed from comma format ('12,50'): 122
+  gross EUR 60,013.80 | paid EUR 53,252.40 | refunds EUR 2,853.84 | net revenue EUR 50,398.56 | cancel rate 5.3%
+
+  net revenue by country:
+    Germany      EUR  27,468.88   (914 orders)
+    Netherlands  EUR   8,582.34   (271 orders)
+    Italy        EUR   8,545.99   (282 orders)
+    India        EUR   5,801.35   (182 orders)

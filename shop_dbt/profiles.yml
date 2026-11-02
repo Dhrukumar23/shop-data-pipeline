@@ -1,0 +1,7 @@
+shop_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: warehouse/shop.duckdb   # relative to the repo root (run commands from there)
+      threads: 4

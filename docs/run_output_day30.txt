@@ -1,0 +1,92 @@
+
+=== 1. SOURCE: shop system exports daily files ===
+  landing zone holds 30 daily batches (2026-09-01 to 2026-09-30)
+
+=== 2. EXTRACT + LOAD: incremental load into warehouse (raw layer) ===
+  loaded batch 2026-09-01: customers=26, products=8, orders=73, payments=62, refunds=0
+  loaded batch 2026-09-02: customers=8, products=0, orders=111, payments=48, refunds=7
+  loaded batch 2026-09-03: customers=4, products=0, orders=104, payments=62, refunds=2
+  loaded batch 2026-09-04: customers=5, products=0, orders=126, payments=58, refunds=1
+  loaded batch 2026-09-05: customers=4, products=1, orders=89, payments=34, refunds=9
+  loaded batch 2026-09-06: customers=6, products=0, orders=79, payments=39, refunds=3
+  loaded batch 2026-09-07: customers=7, products=0, orders=94, payments=50, refunds=3
+  loaded batch 2026-09-08: customers=8, products=1, orders=88, payments=43, refunds=4
+  loaded batch 2026-09-09: customers=6, products=0, orders=88, payments=44, refunds=7
+  loaded batch 2026-09-10: customers=6, products=1, orders=78, payments=41, refunds=3
+  loaded batch 2026-09-11: customers=8, products=0, orders=71, payments=38, refunds=2
+  loaded batch 2026-09-12: customers=6, products=1, orders=86, payments=48, refunds=2
+  loaded batch 2026-09-13: customers=5, products=1, orders=86, payments=42, refunds=7
+  loaded batch 2026-09-14: customers=4, products=0, orders=108, payments=54, refunds=4
+  loaded batch 2026-09-15: customers=4, products=0, orders=97, payments=56, refunds=5
+  loaded batch 2026-09-16: customers=3, products=1, orders=103, payments=57, refunds=1
+  loaded batch 2026-09-17: customers=6, products=0, orders=105, payments=55, refunds=4
+  loaded batch 2026-09-18: customers=7, products=0, orders=98, payments=46, refunds=4
+  loaded batch 2026-09-19: customers=4, products=0, orders=73, payments=41, refunds=4
+  loaded batch 2026-09-20: customers=5, products=0, orders=96, payments=54, refunds=3
+  loaded batch 2026-09-21: customers=4, products=0, orders=110, payments=53, refunds=5
+  loaded batch 2026-09-22: customers=6, products=1, orders=107, payments=53, refunds=6
+  loaded batch 2026-09-23: customers=8, products=0, orders=90, payments=43, refunds=4
+  loaded batch 2026-09-24: customers=4, products=0, orders=94, payments=51, refunds=3
+  loaded batch 2026-09-25: customers=6, products=0, orders=100, payments=52, refunds=4
+  loaded batch 2026-09-26: customers=7, products=0, orders=86, payments=41, refunds=2
+  loaded batch 2026-09-27: customers=8, products=1, orders=68, payments=39, refunds=4
+  loaded batch 2026-09-28: customers=7, products=1, orders=70, payments=38, refunds=6
+  loaded batch 2026-09-29: customers=6, products=2, orders=81, payments=46, refunds=5
+  loaded batch 2026-09-30: customers=4, products=1, orders=83, payments=40, refunds=5
+
+=== 3. TRANSFORM: dbt build (models + tests) ===
+  4 of 35 OK created sql view model staging.stg_products ......................... [OK in 0.27s]
+  1 of 35 OK created sql view model staging.stg_customers ........................ [OK in 0.28s]
+  3 of 35 OK created sql view model staging.stg_payments ......................... [OK in 0.28s]
+  2 of 35 OK created sql view model staging.stg_orders ........................... [OK in 0.31s]
+  5 of 35 OK created sql view model staging.stg_refunds .......................... [OK in 0.18s]
+  6 of 35 PASS not_null_stg_products_product_id .................................. [PASS in 0.24s]
+  7 of 35 PASS unique_stg_products_product_id .................................... [PASS in 0.21s]
+  8 of 35 PASS accepted_values_stg_customers_country__Germany__Italy__India__Netherlands  [PASS in 0.21s]
+  9 of 35 PASS not_null_stg_customers_customer_id ................................ [PASS in 0.13s]
+  11 of 35 PASS not_null_stg_payments_payment_id ................................. [PASS in 0.09s]
+  12 of 35 PASS unique_stg_payments_payment_id ................................... [PASS in 0.11s]
+  10 of 35 PASS unique_stg_customers_customer_id ................................. [PASS in 0.12s]
+  13 of 35 PASS accepted_values_stg_orders_status__placed__shipped__cancelled .... [PASS in 0.12s]
+  14 of 35 PASS not_null_stg_orders_customer_id .................................. [PASS in 0.11s]
+  15 of 35 PASS not_null_stg_orders_order_id ..................................... [PASS in 0.10s]
+  16 of 35 PASS relationships_stg_orders_customer_id__customer_id__ref_stg_customers_  [PASS in 0.12s]
+  17 of 35 PASS relationships_stg_payments_order_id__order_id__ref_stg_orders_ ... [PASS in 0.12s]
+  19 of 35 PASS not_null_stg_refunds_refund_id ................................... [PASS in 0.07s]
+  18 of 35 PASS unique_stg_orders_order_id ....................................... [PASS in 0.11s]
+  20 of 35 PASS unique_stg_refunds_refund_id ..................................... [PASS in 0.15s]
+  22 of 35 OK created sql table model marts.dim_customer ......................... [OK in 0.21s]
+  23 of 35 OK created sql view model intermediate.int_order_financials ........... [OK in 0.14s]
+  21 of 35 OK created sql table model marts.dim_product .......................... [OK in 0.29s]
+  24 of 35 PASS not_null_dim_customer_customer_id ................................ [PASS in 0.11s]
+  25 of 35 PASS unique_dim_customer_customer_id .................................. [PASS in 0.11s]
+  26 of 35 PASS not_null_dim_product_product_id .................................. [PASS in 0.09s]
+  27 of 35 PASS unique_dim_product_product_id .................................... [PASS in 0.09s]
+  28 of 35 OK created sql table model marts.fct_orders ........................... [OK in 0.06s]
+  30 of 35 PASS assert_payment_not_above_order ................................... [PASS in 0.09s]
+  29 of 35 PASS assert_net_revenue_not_negative .................................. [PASS in 0.09s]
+  31 of 35 PASS not_null_fct_orders_order_id ..................................... [PASS in 0.09s]
+  32 of 35 PASS relationships_fct_orders_customer_id__customer_id__ref_dim_customer_  [PASS in 0.10s]
+  33 of 35 PASS relationships_fct_orders_product_id__product_id__ref_dim_product_  [PASS in 0.07s]
+  34 of 35 PASS unique_fct_orders_order_id ....................................... [PASS in 0.06s]
+  35 of 35 OK created sql table model marts.mart_daily_revenue ................... [OK in 0.03s]
+  Done. PASS=35 WARN=0 ERROR=0 SKIP=0 NO-OP=0 REUSED=0 TOTAL=35
+
+=== 4. SERVE: export marts for Power BI ===
+  output/fct_orders.csv
+  output/dim_customer.csv
+  output/dim_product.csv
+  output/mart_daily_revenue.csv
+
+=== 5. REPORT: data quality and KPIs ===
+  orders:    2,742 raw rows (incl. duplicates + status updates) -> 1,599 clean orders
+  customers: 192 raw rows -> 183 unique customers
+  country spellings standardised: 13 variants -> 4 countries
+  amounts fixed from comma format ('12,50'): 117
+  gross EUR 57,794.50 | paid EUR 51,354.50 | refunds EUR 2,846.94 | net revenue EUR 48,507.56 | cancel rate 5.4%
+
+  net revenue by country:
+    Germany      EUR  26,739.18   (893 orders)
+    Netherlands  EUR   8,107.14   (261 orders)
+    Italy        EUR   8,030.29   (269 orders)
+    India        EUR   5,630.95   (176 orders)
