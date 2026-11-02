@@ -45,6 +45,7 @@ flowchart LR
 | **3. Transform** | dbt builds 3 layers: **staging** (clean each table), **intermediate** (combine + business rules), **marts** (star schema + KPI table) | `shop_dbt/models/` |
 | **4. Test** | **35 dbt models and data tests** run on every build: unique keys, not-null, accepted values, relationships between tables, plus custom business rules. If a test fails, the pipeline stops and no bad data is published | `shop_dbt/models/*/schema.yml`, `shop_dbt/tests/` |
 | **5. Serve** | Mart tables are exported for Power BI / Excel | `output/` |
+| **6. Visualize** | Power BI connects to the star schema (`fct_orders` + dimensions, `mart_daily_revenue`) to build dashboards for business users. The report can be published to Power BI Service with a scheduled refresh, so the dashboard updates after each daily pipeline run | Power BI (next step) |
 
 This is the **ELT** pattern (Extract, Load, then Transform inside the warehouse),
 with the **medallion idea** of raw → clean → business-ready layers.
@@ -95,4 +96,5 @@ Python · pandas · **DuckDB** (warehouse) · **dbt** (SQL transformations, test
 - **Orchestration** with Airflow, Dagster or Azure Data Factory instead of one script
 - A cloud warehouse (Snowflake, BigQuery, Databricks or Microsoft Fabric) instead of a local DuckDB file
 - dbt **incremental models** and **snapshots** (history of changing customer data)
-- Alerting when tests fail, and a Power BI dashboard on top of the marts
+- Alerting when tests fail
+- A published Power BI dashboard on top of the marts, refreshed after every pipeline run
